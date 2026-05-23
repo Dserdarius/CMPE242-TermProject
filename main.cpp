@@ -76,7 +76,70 @@ public:
     }
 
     void quickSort(int arr[], int low, int high) {
-        cout << "Ekleyin abi" << endl;
+        step = 1;
+
+        long long opCount = 0;
+        int fullSize = high + 1;
+
+        quickSortHelper(arr, low, high, fullSize, opCount, true);
+
+        cout << "Total opCount: " << opCount << endl;
+        cout << "Sorted Array: ";
+        display(arr, fullSize);
+    }
+
+    int quickPartition(int arr[], int low, int high, int fullSize, long long &opCount, bool showSteps) {
+        int pivot = arr[high];
+        opCount++;
+
+        int i = low - 1;
+        opCount++;
+
+        for (int j = low; j <= high - 1; j++) {
+            opCount++;
+            opCount++;
+
+            if (arr[j] <= pivot) {
+                i++;
+                opCount++;
+
+                if (i != j) {
+                    swap(arr[i], arr[j]);
+                    opCount += 3;
+
+                    if (showSteps)
+                        printStep("Quick", "quick swap", arr, fullSize);
+                }
+            }
+        }
+
+        opCount++;
+
+        if (i + 1 != high) {
+            swap(arr[i + 1], arr[high]);
+            opCount += 3;
+
+            if (showSteps)
+                printStep("Quick", "pivot swap", arr, fullSize);
+        }
+
+        return i + 1;
+    }
+
+    void quickSortHelper(int arr[], int low, int high, int fullSize, long long &opCount, bool showSteps) {
+        opCount++;
+
+        if (low < high) {
+            int pivotIndex = quickPartition(arr, low, high, fullSize, opCount, showSteps);
+            opCount++;
+
+            quickSortHelper(arr, low, pivotIndex - 1, fullSize, opCount, showSteps);
+            quickSortHelper(arr, pivotIndex + 1, high, fullSize, opCount, showSteps);
+        }
+    }
+
+    void quickSortForCostTable(int arr[], int low, int high, int fullSize, long long &opCount) {
+        quickSortHelper(arr, low, high, fullSize, opCount, false);
     }
 
     void insertionSort(int arr[], int n, long long &opCount, bool showSteps) {
@@ -168,7 +231,7 @@ public:
 
                     long long opCount = 0;
 
-                    if (a == 1) { quickSort(arr, 0, n - 1); }
+                    if (a == 1) { quickSortForCostTable(arr, 0, n - 1, n, opCount); }
                     else if (a == 2) { insertionSort(arr, n, opCount, false); }
                     else if (a == 3) { heapSort(arr, n, opCount, false); }
                     else if (a == 4) { selectionSort(arr, n, opCount, false); }
