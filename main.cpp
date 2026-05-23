@@ -15,8 +15,8 @@ class Sort {
 private:
     int step = 1;
 
-    void printStep(string operation, int arr[], int n) {
-        cout << left << setw(10) << "Heap" << "Step " << setw(8) << step << setw(20) << operation;
+    void printStep(string label, string operation, int arr[], int n) {
+        cout << left << setw(10) << label << "Step " << setw(8) << step << setw(20) << operation;
 
         display(arr, n);
         step++;
@@ -47,7 +47,7 @@ private:
             opCount += 3;
 
             if (showSteps)
-                printStep("heapify swap", arr, fullSize);
+                printStep("Heap", "heapify swap", arr, fullSize);
 
             heapify(arr, n, largest, fullSize, opCount, showSteps);
             opCount++;
@@ -68,7 +68,7 @@ public:
             opCount += 3;
 
             if (showSteps)
-                printStep("max to end swap", arr, n);
+                printStep("Heap", "max to end swap", arr, n);
 
             heapify(arr, i, 0, n, opCount, showSteps);
             opCount++;
@@ -79,43 +79,79 @@ public:
         cout << "Ekleyin abi" << endl;
     }
 
-    void insertionSort(int arr[], int n) {
-        cout << "Aloooo" << endl;
+    void insertionSort(int arr[], int n, long long &opCount, bool showSteps) {
+        step = 1;
+
+        for (int i = 1; i < n; i++) {
+            opCount++;
+
+            int key = arr[i];
+            opCount++;
+
+            int j = i - 1;
+            opCount++;
+
+            bool shifted = false;
+
+            while (j >= 0 && arr[j] > key) {
+                opCount += 2;
+
+                arr[j + 1] = arr[j];
+                opCount++;
+
+                shifted = true;
+                opCount++;
+
+                if (showSteps)
+                    printStep("Insertion", "insertion shift", arr, n);
+
+                j--;
+                opCount++;
+            }
+
+            opCount++;
+
+            arr[j + 1] = key;
+            opCount++;
+
+            if (showSteps && shifted)
+                printStep("Insertion", "insertion place", arr, n);
+        }
     }
 
     void selectionSort(int arr[], int n, long long &opCount, bool showSteps) {
-        step = 1; // Adım sayacını sıfırla
+        step = 1;
 
         for (int i = 0; i < n - 1; i++) {
-            opCount++; // Dış döngü kontrolü
+            opCount++;
             int min_idx = i;
-            opCount++; // Atama işlemi
+            opCount++;
 
             for (int j = i + 1; j < n; j++) {
-                opCount++; // İç döngü kontrolü
-                opCount++; // İf karşılaştırması
+                opCount++;
+                opCount++;
                 if (arr[j] < arr[min_idx]) {
                     min_idx = j;
-                    opCount++; // Atama işlemi
+                    opCount++;
                 }
             }
 
-            opCount++; // Takas (swap) şartı kontrolü
+            opCount++;
             if (min_idx != i) {
                 swap(arr[min_idx], arr[i]);
-                opCount += 3; // Takas işlemi maliyeti
+                opCount += 3;
 
                 if (showSteps)
-                    printStep("selection swap", arr, n);
+                    printStep("Selection", "selection swap", arr, n);
             }
         }
     }
-    
+
     void compareAllAlgorithms() {
         int sizes[] = {100, 200, 300, 1000};
         int repeat = 20;
 
-        cout << left << setw(15) << "Algorithm" << setw(12) << "n" << setw(12) << "Repeat" << setw(18) 
+        cout << left << setw(15) << "Algorithm" << setw(12) << "n" << setw(12) << "Repeat" << setw(18)
         << "Avg opCount" << setw(15) << "T/n" << setw(15) << "T/n^2" << setw(15) << "T/logn" << endl;
 
         for (int a = 1; a <= 4; a++) {
@@ -133,10 +169,10 @@ public:
                     long long opCount = 0;
 
                     if (a == 1) { quickSort(arr, 0, n - 1); }
-                    else if (a == 2) { insertionSort(arr, n); }
+                    else if (a == 2) { insertionSort(arr, n, opCount, false); }
                     else if (a == 3) { heapSort(arr, n, opCount, false); }
                     else if (a == 4) { selectionSort(arr, n, opCount, false); }
-                    
+
                     totalCost += opCount;
                     delete[] arr;
                 }
@@ -149,15 +185,15 @@ public:
                 else if (a == 3) name = "Heap";
                 else name = "Selection";
 
-                cout << left << setw(15) << name << setw(12) << n << setw(12) 
-                << repeat << setw(18) << avg << setw(15) << avg / n << setw(15) 
+                cout << left << setw(15) << name << setw(12) << n << setw(12)
+                << repeat << setw(18) << avg << setw(15) << avg / n << setw(15)
                 << avg / (n * n) << setw(15) << avg / log2(n) << endl;
             }
 
             cout << endl;
         }
     }
-    
+
     void display(int arr[], int n) {
         for (int i = 0; i < n; i++)
             cout << arr[i] << " ";
@@ -186,15 +222,18 @@ int main() {
     cout << "5. Compare All Algorithms Cost Table\n";
     cout << "Enter your choice: ";
     cin >> choice;
-    
+
     switch (choice) {
     case 1:
         s.quickSort(arr, 0, n - 1);
         break;
 
-    case 2:
-        s.insertionSort(arr, n);
+    case 2: {
+        long long opCount = 0;
+        s.insertionSort(arr, n, opCount, true);
+        cout << "Total opCount: " << opCount << endl;
         break;
+    }
 
     case 3: {
         long long opCount = 0;
