@@ -83,8 +83,32 @@ public:
         cout << "Aloooo" << endl;
     }
 
-    void selectionSort(int arr[], int n) {
-        cout << "Nooluyo olmm" << endl;
+    void selectionSort(int arr[], int n, long long &opCount, bool showSteps) {
+        step = 1; // Adım sayacını sıfırla
+
+        for (int i = 0; i < n - 1; i++) {
+            opCount++; // Dış döngü kontrolü
+            int min_idx = i;
+            opCount++; // Atama işlemi
+
+            for (int j = i + 1; j < n; j++) {
+                opCount++; // İç döngü kontrolü
+                opCount++; // İf karşılaştırması
+                if (arr[j] < arr[min_idx]) {
+                    min_idx = j;
+                    opCount++; // Atama işlemi
+                }
+            }
+
+            opCount++; // Takas (swap) şartı kontrolü
+            if (min_idx != i) {
+                swap(arr[min_idx], arr[i]);
+                opCount += 3; // Takas işlemi maliyeti
+
+                if (showSteps)
+                    printStep("selection swap", arr, n);
+            }
+        }
     }
     
     void compareAllAlgorithms() {
@@ -111,7 +135,7 @@ public:
                     if (a == 1) { quickSort(arr, 0, n - 1); }
                     else if (a == 2) { insertionSort(arr, n); }
                     else if (a == 3) { heapSort(arr, n, opCount, false); }
-                    else if (a == 4) { selectionSort(arr, n); }
+                    else if (a == 4) { selectionSort(arr, n, opCount, false); }
                     
                     totalCost += opCount;
                     delete[] arr;
@@ -179,9 +203,12 @@ int main() {
         break;
     }
 
-    case 4:
-        s.selectionSort(arr, n);
+    case 4: {
+        long long opCount = 0;
+        s.selectionSort(arr, n, opCount, true);
+        cout << "Total opCount: " << opCount << endl;
         break;
+    }
 
     case 5:
         s.compareAllAlgorithms();
