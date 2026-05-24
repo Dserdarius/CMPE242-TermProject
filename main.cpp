@@ -13,312 +13,331 @@ using namespace std;
 
 class Sort {
 private:
-    int step = 1;
+	int step = 1;
 
-    void printStep(string label, string operation, int arr[], int n) {
-        cout << left << setw(10) << label << "Step " << setw(8) << step << setw(20) << operation;
+	void printStep(string label, string operation, int arr[], int n) {
+		cout << left << setw(10) << label << "Step " << setw(8) << step << setw(20) << operation;
 
-        display(arr, n);
-        step++;
-    }
+		display(arr, n);
+		step++;
+	}
 
-    void heapify(int arr[], int n, int i, int fullSize, long long &opCount, bool showSteps) {
-        int largest = i;
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
+	void heapify(int arr[], int n, int i, int fullSize, long long &opCount, bool showSteps) {
+		int largest = i;
+		int left = 2 * i + 1;
+		int right = 2 * i + 2;
 
-        opCount += 5;
+		opCount += 5;
 
-        opCount++;
-        if (left < n && arr[left] > arr[largest]) {
-            largest = left;
-            opCount++;
-        }
+		opCount++;
+		if (left < n && arr[left] > arr[largest]) {
+			largest = left;
+			opCount++;
+		}
 
-        opCount++;
-        if (right < n && arr[right] > arr[largest]) {
-            largest = right;
-            opCount++;
-        }
+		opCount++;
+		if (right < n && arr[right] > arr[largest]) {
+			largest = right;
+			opCount++;
+		}
 
-        opCount++;
-        if (largest != i) {
-            swap(arr[i], arr[largest]);
-            opCount += 3;
+		opCount++;
+		if (largest != i) {
+			swap(arr[i], arr[largest]);
+			opCount += 3;
 
-            if (showSteps)
-                printStep("Heap", "heapify swap", arr, fullSize);
+			if (showSteps)
+				printStep("Heap", "heapify swap", arr, fullSize);
 
-            heapify(arr, n, largest, fullSize, opCount, showSteps);
-            opCount++;
-        }
-    }
+			heapify(arr, n, largest, fullSize, opCount, showSteps);
+			opCount++;
+		}
+	}
+
+	int quickPartition(int arr[], int low, int high, int fullSize, long long &opCount, bool showSteps) {
+		int pivot = arr[high];
+		opCount++;
+
+		int i = low - 1;
+		opCount++;
+
+		for (int j = low; j <= high - 1; j++) {
+			opCount++;
+			opCount++;
+
+			if (arr[j] <= pivot) {
+				i++;
+				opCount++;
+
+				if (i != j) {
+					swap(arr[i], arr[j]);
+					opCount += 3;
+
+					if (showSteps)
+						printStep("Quick", "quick swap", arr, fullSize);
+				}
+			}
+		}
+
+		opCount++;
+
+		if (i + 1 != high) {
+			swap(arr[i + 1], arr[high]);
+			opCount += 3;
+
+			if (showSteps)
+				printStep("Quick", "pivot swap", arr, fullSize);
+		}
+
+		return i + 1;
+	}
+
+	void quickSortHelper(int arr[], int low, int high, int fullSize, long long &opCount, bool showSteps) {
+		opCount++;
+
+		if (low < high) {
+			int pivotIndex = quickPartition(arr, low, high, fullSize, opCount, showSteps);
+			opCount++;
+
+			quickSortHelper(arr, low, pivotIndex - 1, fullSize, opCount, showSteps);
+			quickSortHelper(arr, pivotIndex + 1, high, fullSize, opCount, showSteps);
+		}
+	}
+
+	void quickSortForCostTable(int arr[], int low, int high, int fullSize, long long &opCount) {
+		quickSortHelper(arr, low, high, fullSize, opCount, false);
+	}
 
 public:
-    void heapSort(int arr[], int n, long long &opCount, bool showSteps) {
-        step = 1;
+	void heapSort(int arr[], int n, long long &opCount, bool showSteps) {
+		step = 1;
 
-        for (int i = n / 2 - 1; i >= 0; i--) {
-            opCount++;
-            heapify(arr, n, i, n, opCount, showSteps);
-        }
+		for (int i = n / 2 - 1; i >= 0; i--) {
+			opCount++;
+			heapify(arr, n, i, n, opCount, showSteps);
+		}
 
-        for (int i = n - 1; i > 0; i--) {
-            swap(arr[0], arr[i]);
-            opCount += 3;
+		for (int i = n - 1; i > 0; i--) {
+			swap(arr[0], arr[i]);
+			opCount += 3;
 
-            if (showSteps)
-                printStep("Heap", "max to end swap", arr, n);
+			if (showSteps)
+				printStep("Heap", "max to end swap", arr, n);
 
-            heapify(arr, i, 0, n, opCount, showSteps);
-            opCount++;
-        }
-    }
+			heapify(arr, i, 0, n, opCount, showSteps);
+			opCount++;
+		}
+	}
 
-    void quickSort(int arr[], int low, int high) {
-        step = 1;
+	void quickSort(int arr[], int low, int high) {
+		step = 1;
 
-        long long opCount = 0;
-        int fullSize = high + 1;
+		long long opCount = 0;
+		int fullSize = high + 1;
 
-        quickSortHelper(arr, low, high, fullSize, opCount, true);
+		quickSortHelper(arr, low, high, fullSize, opCount, true);
 
-        cout << "Total opCount: " << opCount << endl;
-        cout << "Sorted Array: ";
-        display(arr, fullSize);
-    }
+		cout << "Total opCount: " << opCount << endl;
+		cout << "Sorted Array: ";
+		display(arr, fullSize);
+	}
 
-    int quickPartition(int arr[], int low, int high, int fullSize, long long &opCount, bool showSteps) {
-        int pivot = arr[high];
-        opCount++;
+	void insertionSort(int arr[], int n, long long &opCount, bool showSteps) {
+		step = 1;
 
-        int i = low - 1;
-        opCount++;
+		for (int i = 1; i < n; i++) {
+			opCount++;
 
-        for (int j = low; j <= high - 1; j++) {
-            opCount++;
-            opCount++;
+			int key = arr[i];
+			opCount++;
 
-            if (arr[j] <= pivot) {
-                i++;
-                opCount++;
+			int j = i - 1;
+			opCount++;
 
-                if (i != j) {
-                    swap(arr[i], arr[j]);
-                    opCount += 3;
+			bool shifted = false;
 
-                    if (showSteps)
-                        printStep("Quick", "quick swap", arr, fullSize);
-                }
-            }
-        }
+			while (j >= 0 && arr[j] > key) {
+				opCount += 2;
 
-        opCount++;
+				arr[j + 1] = arr[j];
+				opCount++;
 
-        if (i + 1 != high) {
-            swap(arr[i + 1], arr[high]);
-            opCount += 3;
+				shifted = true;
+				opCount++;
 
-            if (showSteps)
-                printStep("Quick", "pivot swap", arr, fullSize);
-        }
+				if (showSteps)
+					printStep("Insertion", "insertion shift", arr, n);
 
-        return i + 1;
-    }
+				j--;
+				opCount++;
+			}
 
-    void quickSortHelper(int arr[], int low, int high, int fullSize, long long &opCount, bool showSteps) {
-        opCount++;
+			opCount++;
 
-        if (low < high) {
-            int pivotIndex = quickPartition(arr, low, high, fullSize, opCount, showSteps);
-            opCount++;
+			arr[j + 1] = key;
+			opCount++;
 
-            quickSortHelper(arr, low, pivotIndex - 1, fullSize, opCount, showSteps);
-            quickSortHelper(arr, pivotIndex + 1, high, fullSize, opCount, showSteps);
-        }
-    }
+			if (showSteps && shifted)
+				printStep("Insertion", "insertion place", arr, n);
+		}
+	}
 
-    void quickSortForCostTable(int arr[], int low, int high, int fullSize, long long &opCount) {
-        quickSortHelper(arr, low, high, fullSize, opCount, false);
-    }
+	void selectionSort(int arr[], int n, long long &opCount, bool showSteps) {
+		step = 1;
 
-    void insertionSort(int arr[], int n, long long &opCount, bool showSteps) {
-        step = 1;
+		for (int i = 0; i < n - 1; i++) {
+			opCount++;
+			int min_idx = i;
+			opCount++;
 
-        for (int i = 1; i < n; i++) {
-            opCount++;
+			for (int j = i + 1; j < n; j++) {
+				opCount++;
+				opCount++;
+				if (arr[j] < arr[min_idx]) {
+					min_idx = j;
+					opCount++;
+				}
+			}
 
-            int key = arr[i];
-            opCount++;
+			opCount++;
+			if (min_idx != i) {
+				swap(arr[min_idx], arr[i]);
+				opCount += 3;
 
-            int j = i - 1;
-            opCount++;
+				if (showSteps)
+					printStep("Selection", "selection swap", arr, n);
+			}
+		}
+	}
 
-            bool shifted = false;
+	void compareAllAlgorithms() {
+		int sizes[] = {100, 200, 300, 1000};
+		int repeat = 20;
 
-            while (j >= 0 && arr[j] > key) {
-                opCount += 2;
+		cout << left << setw(15) << "Algorithm" << setw(12) << "n" << setw(12) << "Repeat" << setw(18)
+		     << "Avg opCount" << setw(15) << "T/n" << setw(15) << "T/n^2" << setw(15) << "T/logn" << endl;
 
-                arr[j + 1] = arr[j];
-                opCount++;
+		for (int a = 1; a <= 4; a++) {
+			for (int s = 0; s < 4; s++) {
+				int n = sizes[s];
+				long long totalCost = 0;
 
-                shifted = true;
-                opCount++;
+				for (int r = 0; r < repeat; r++) {
+					int* arr = new int[n];
 
-                if (showSteps)
-                    printStep("Insertion", "insertion shift", arr, n);
+					for (int i = 0; i < n; i++) {
+						arr[i] = rand() % 10000;
+					}
 
-                j--;
-                opCount++;
-            }
+					long long opCount = 0;
 
-            opCount++;
+					if (a == 1) {
+						quickSortForCostTable(arr, 0, n - 1, n, opCount);
+					}
+					else if (a == 2) {
+						insertionSort(arr, n, opCount, false);
+					}
+					else if (a == 3) {
+						heapSort(arr, n, opCount, false);
+					}
+					else if (a == 4) {
+						selectionSort(arr, n, opCount, false);
+					}
 
-            arr[j + 1] = key;
-            opCount++;
+					totalCost += opCount;
+					delete[] arr;
+				}
 
-            if (showSteps && shifted)
-                printStep("Insertion", "insertion place", arr, n);
-        }
-    }
+				double avg = totalCost / (double)repeat;
 
-    void selectionSort(int arr[], int n, long long &opCount, bool showSteps) {
-        step = 1;
+				string name;
+				if (a == 1) name = "Quick";
+				else if (a == 2) name = "Insertion";
+				else if (a == 3) name = "Heap";
+				else name = "Selection";
 
-        for (int i = 0; i < n - 1; i++) {
-            opCount++;
-            int min_idx = i;
-            opCount++;
+				cout << left << setw(15) << name << setw(12) << n << setw(12)
+				     << repeat << setw(18) << avg << setw(15) << avg / n << setw(15)
+				     << avg / (n * n) << setw(15) << avg / log2(n) << endl;
+			}
 
-            for (int j = i + 1; j < n; j++) {
-                opCount++;
-                opCount++;
-                if (arr[j] < arr[min_idx]) {
-                    min_idx = j;
-                    opCount++;
-                }
-            }
+			cout << endl;
+		}
+	}
 
-            opCount++;
-            if (min_idx != i) {
-                swap(arr[min_idx], arr[i]);
-                opCount += 3;
+	void display(int arr[], int n) {
+		for (int i = 0; i < n; i++)
+			cout << arr[i] << " ";
 
-                if (showSteps)
-                    printStep("Selection", "selection swap", arr, n);
-            }
-        }
-    }
-
-    void compareAllAlgorithms() {
-        int sizes[] = {100, 200, 300, 1000};
-        int repeat = 20;
-
-        cout << left << setw(15) << "Algorithm" << setw(12) << "n" << setw(12) << "Repeat" << setw(18)
-        << "Avg opCount" << setw(15) << "T/n" << setw(15) << "T/n^2" << setw(15) << "T/logn" << endl;
-
-        for (int a = 1; a <= 4; a++) {
-            for (int s = 0; s < 4; s++) {
-                int n = sizes[s];
-                long long totalCost = 0;
-
-                for (int r = 0; r < repeat; r++) {
-                    int* arr = new int[n];
-
-                    for (int i = 0; i < n; i++) {
-                        arr[i] = rand() % 10000;
-                    }
-
-                    long long opCount = 0;
-
-                    if (a == 1) { quickSortForCostTable(arr, 0, n - 1, n, opCount); }
-                    else if (a == 2) { insertionSort(arr, n, opCount, false); }
-                    else if (a == 3) { heapSort(arr, n, opCount, false); }
-                    else if (a == 4) { selectionSort(arr, n, opCount, false); }
-
-                    totalCost += opCount;
-                    delete[] arr;
-                }
-
-                double avg = totalCost / (double)repeat;
-
-                string name;
-                if (a == 1) name = "Quick";
-                else if (a == 2) name = "Insertion";
-                else if (a == 3) name = "Heap";
-                else name = "Selection";
-
-                cout << left << setw(15) << name << setw(12) << n << setw(12)
-                << repeat << setw(18) << avg << setw(15) << avg / n << setw(15)
-                << avg / (n * n) << setw(15) << avg / log2(n) << endl;
-            }
-
-            cout << endl;
-        }
-    }
-
-    void display(int arr[], int n) {
-        for (int i = 0; i < n; i++)
-            cout << arr[i] << " ";
-
-        cout << endl;
-    }
+		cout << endl;
+	}
 };
 
 int main() {
-    srand(time(0));
+	srand(time(0));
 
-    Sort s;
+	Sort s;
 
-    int arr[] = {45, 12, 89, 33, 7, 24};
-    int n = sizeof(arr) / sizeof(arr[0]);
+	int original[] = {45, 12, 89, 33, 7, 24};
+	int n = sizeof(original) / sizeof(original[0]);
 
-    int choice;
+	int choice;
 
-    cout << "Original Array: ";
-    s.display(arr, n);
+	while (true) {
+		int arr[n];
 
-    cout << "\n1. Quick Sort\n";
-    cout << "2. Insertion Sort\n";
-    cout << "3. Heap Sort\n";
-    cout << "4. Selection Sort\n";
-    cout << "5. Compare All Algorithms Cost Table\n";
-    cout << "Enter your choice: ";
-    cin >> choice;
+		for (int i = 0; i < n; i++) {
+			arr[i] = original[i];
+		}
 
-    switch (choice) {
-    case 1:
-        s.quickSort(arr, 0, n - 1);
-        break;
+		cout << "\nOriginal Array: ";
+		s.display(arr, n);
 
-    case 2: {
-        long long opCount = 0;
-        s.insertionSort(arr, n, opCount, true);
-        cout << "Total opCount: " << opCount << endl;
-        break;
-    }
+		cout << "\n1. Quick Sort\n";
+		cout << "2. Insertion Sort\n";
+		cout << "3. Heap Sort\n";
+		cout << "4. Selection Sort\n";
+		cout << "5. Compare All Algorithms Cost Table\n";
+		cout << "0. Exit\n";
+		cout << "Enter your choice: ";
+		cin >> choice;
 
-    case 3: {
-        long long opCount = 0;
-        s.heapSort(arr, n, opCount, true);
-        cout << "Total opCount: " << opCount << endl;
-        break;
-    }
+		if (choice == 0)
+			break;
 
-    case 4: {
-        long long opCount = 0;
-        s.selectionSort(arr, n, opCount, true);
-        cout << "Total opCount: " << opCount << endl;
-        break;
-    }
+		switch (choice) {
+		case 1:
+			s.quickSort(arr, 0, n - 1);
+			break;
 
-    case 5:
-        s.compareAllAlgorithms();
-    break;
-    
-    default:
-        cout << "Invalid choice!" << endl;
-    }
+		case 2: {
+			long long opCount = 0;
+			s.insertionSort(arr, n, opCount, true);
+			cout << "Total opCount: " << opCount << endl;
+			break;
+		}
 
-    return 0;
+		case 3: {
+			long long opCount = 0;
+			s.heapSort(arr, n, opCount, true);
+			cout << "Total opCount: " << opCount << endl;
+			break;
+		}
+
+		case 4: {
+			long long opCount = 0;
+			s.selectionSort(arr, n, opCount, true);
+			cout << "Total opCount: " << opCount << endl;
+			break;
+		}
+
+		case 5:
+			s.compareAllAlgorithms();
+			break;
+
+		default:
+			cout << "Invalid choice!" << endl;
+		}
+	}
+	return 0;
 }
